@@ -6,4 +6,5 @@ numpy==1.19.5
 matplotlib==3.4.2
 pillow
 scikit-learn==0.24.1
-imblearn==0.0
+imblearn
+constraint

@@ -187,13 +187,13 @@ if question == 'Q1':
 
     cols = st.columns(3)
     with cols[0]:
-        image1 = Image.open('r02_rs005_m0.01.png')
+        image1 = Image.open('Q1/r02_rs005_m0.01.png')
         st.image(image1)#,width=800
     with cols[1]:
-        image2 = Image.open('r05_rs01_m005.png')
+        image2 = Image.open('Q1/r05_rs01_m005.png')
         st.image(image2)
     with cols[2]:
-        image3 = Image.open('r07_rs02_m01.png')
+        image3 = Image.open('Q1/r07_rs02_m01.png')
         st.image(image3)
         
     st.write("The three figures plots the fitness score to the number of generations the population has evolved using the same budget and vacation days. In the first figure, we evolved the population using a parent retention percentage of 0.2, random selection of 0.05 and mutation of 0.01. A fitness score of around 200 was obtained before the 10th generation. Next using parent retention percentage of 0.5, random selection of 0.1 and mutation of 0.05, we obtained a fitness score of around 200 as well but only at the 19th generation. In the last plot, we used parent retention percentage of 0.7, random selection of 0.2 and mutation of 0.1 to evolve the population and found that it took around 30 generations to obtain a the fitness score of 1000. We can say that the higher the retention, random selection and mutation percentage, the slower it takes to reach a better fitness score.")
@@ -511,94 +511,22 @@ else:
         st.write('- Choosing k value manually.')
     st.write('---')
 
-    # prepare the dataset
-    dataset_cluster = dataset.copy()
-    X = dataset_cluster.drop('Decision', axis=1)
-    y = dataset_cluster['Decision'].map({'Accept': 1, 'Reject': 0})
-
-    # encode object columns
-    X = pd.get_dummies(X)
-
     st.header('Find the optimal k value')
-    
-    # find the best k
-    distortions = []
-    silhouette = []
 
-    for k in range(2, 12):
-        km = KMeans(n_clusters=k)
-        km.fit(X)
-        distortions.append(km.inertia_)
-        silhouette.append(silhouette_score(X, km.labels_))
-
-    col1, col2 = st.columns(2)
-
-    # elbow: line very smooth, unclear
-    with col1:
-        
-        elbow_data = pd.DataFrame({'k':range(2,12),'Distortions':distortions})
-        elbow_line = alt.Chart(elbow_data,title='Elbow method').mark_line().encode(
-                                                                                    x='k',
-                                                                                    y='Distortions'
-                                                                                )
-        elbow_marks = alt.Chart(elbow_data).mark_circle(size=100).encode(
-                                                                            x='k',
-                                                                            y='Distortions',
-                                                                            tooltip=['k','Distortions']
-                                                                        ).interactive()
-        st.altair_chart(elbow_line+elbow_marks, use_container_width=True)
-
-
-    # silhouette: choose highest
-    with col2:
-        silhouette_data = pd.DataFrame({'k':range(2,12),'Silhouette_score':silhouette})
-        best_silhouette_data = pd.DataFrame({'k':[range(2,12)[np.argmax(silhouette)]],'Silhouette_score':[max(silhouette)]})
-        silhouette_line = alt.Chart(silhouette_data,title='Silhouette Score').mark_line().encode(
-                                                                                                    x='k',
-                                                                                                    y='Silhouette_score'
-                                                                                                )
-        silhouette_marks = alt.Chart(silhouette_data).mark_circle(size=100).encode(
-                                                                                        x='k',
-                                                                                        y='Silhouette_score',
-                                                                                        tooltip=['k','Silhouette_score']
-                                                                                    ).interactive()
-        best_silhouette_marks = alt.Chart(best_silhouette_data).mark_circle(size=100,color='red').encode(
-                                                                                                        x='k',
-                                                                                                        y='Silhouette_score'
-                                                                                                    )
-        st.altair_chart(silhouette_line+silhouette_marks+best_silhouette_marks, use_container_width=True)
-
-    km_k = range(2,12)[np.argmax(silhouette)]
-    km = KMeans(n_clusters=km_k)
-    km.fit(X, y)
-
-    df_new = dataset_cluster.copy()
-    df_new = df_new.drop("Decision", axis=1)
-    df_new['Decision']=km.labels_
-    df_new["Decision"] = df_new["Decision"].map({1:"Accept", 0:"Reject"})
+    col1, col2, col3 = st.columns(3)
+    with col1: # elbow: line very smooth, unclear
+        image = Image.open('Q3/Clustering/km_distortion.png')
+        st.image(image)
+    with col2: # silhouette: choose highest
+        image = Image.open('Q3/Clustering/km_silhouette.png')
+        st.image(image)#km_silhouette_visualizer
+    with col3: # silhouette: choose highest
+        image = Image.open('Q3/Clustering/km_silhouette_visualizer.png')
+        st.image(image)
     st.write('---')
 
-    col1, col2 = st.columns(2)
-    with col1:
-        scatter_plot = alt.Chart(dataset_cluster,title='Scatter plot of original label').mark_circle(size=20).encode(
-                                                                                                                    x='Monthly_Salary',
-                                                                                                                    y='Loan_Amount',
-                                                                                                                    color=alt.Color('Decision', scale=alt.Scale(scheme='category10'))
-                                                                                                                ).properties(
-                                                                                                                    width=600,
-                                                                                                                    height=500
-                                                                                                                )
-        st.altair_chart(scatter_plot)
-    with col2:
-        scatter_km_plot = alt.Chart(df_new,title='Scatter plot of clustered k-means label').mark_circle(size=20).encode(
-                                                                                                            x='Monthly_Salary',
-                                                                                                            y='Loan_Amount',
-                                                                                                            color=alt.Color('Decision:N', scale=alt.Scale(scheme='category10'))
-                                                                                                        ).properties(
-                                                                                                            width=650,
-                                                                                                            height=500
-                                                                                                        )
-        st.altair_chart(scatter_km_plot)
+    image = Image.open('Q3/Clustering/km_result.png')
+    st.image(image)
     st.write('---')
 
     st.header('Classification: Random forest classifier and Support vector classifier')
@@ -618,439 +546,45 @@ else:
     st.write('---')
 
     # ---------------------------------------------------------------------------------------------------------------------
-    # Prepare the training and testing dataset
-    dataset_model = dataset.copy()
-
-    # Normalization of numerical columns
-    features_to_normalize = dataset_model.columns[dataset_model.dtypes=='int64'].tolist() 
-    scaler = StandardScaler()
-    new = scaler.fit_transform(dataset_model[features_to_normalize])
-    dataset_model[features_to_normalize] = new
-
-    # split x and y
-    X = dataset_model.drop('Decision', axis=1)
-    y = dataset_model['Decision'].map({'Accept': 1, 'Reject': 0})
-
-    # encode object columns
-    X = pd.get_dummies(X)
-
-    # up-sampling
-    ros = RandomOverSampler(random_state=0)
-    X_resampled, y_resampled = ros.fit_resample(X, y)
-
-    # split train test
-    X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size = 0.3, random_state = 10)
-    # ---------------------------------------------------------------------------------------------------------------------
-    
     st.subheader('Random forest classifier')
 
-    # functions to find the best parameter
-    def rf_select_best_depth(X_train,y_train,X_test,y_test):
-        scores,depth_list = [],[]
-        max_score,counter,depth_counter = 0,0,0
-
-        while True:
-            depth_counter += 1
-            rf = RandomForestClassifier(max_depth=depth_counter)
-            rf.fit(X_train, y_train)
-            score = rf.score(X_test,y_test)*100
-
-            depth_list.append(depth_counter)
-            scores.append(score)
-
-            # stop if accuracy does not improve for 10 epochs
-            if score > max_score+0.02:
-                max_score = score
-                counter = 0
-            elif counter < 9:
-                counter += 1
-            else:
-                break
-        
-        depth_data = pd.DataFrame({'max_depth':depth_list,'Accuracy':scores})
-        best_depth_data = pd.DataFrame({'max_depth':[np.argmax(scores)+1],'Accuracy':[max(scores)]})
-
-        depth_line = alt.Chart(depth_data,title='Accuracy of RF with different max_depth').mark_line().encode(x='max_depth',y='Accuracy')
-        depth_marks = alt.Chart(depth_data).mark_circle(size=20).encode(
-                                                                            x='max_depth',
-                                                                            y='Accuracy',
-                                                                            tooltip=['max_depth','Accuracy']
-                                                                        ).interactive()
-        best_depth_marks = alt.Chart(best_depth_data).mark_circle(size=50,color='red').encode(
-                                                                                                x='max_depth',
-                                                                                                y='Accuracy'
-                                                                                            )
-        best_depth_annotations = alt.Chart(best_depth_data).mark_text(
-                                                                        align='center',
-                                                                        baseline='top',
-                                                                        fontSize = 10,
-                                                                        dx = 0,
-                                                                        dy = 10
-                                                                    ).encode(
-                                                                        x='max_depth',
-                                                                        y='Accuracy',
-                                                                        text='max_depth'
-                                                                    )
-                                                                    
-        st.altair_chart(depth_line+depth_marks+best_depth_marks+best_depth_annotations)
-        return np.argmax(scores)+1
-
-    def rf_select_best_criterion(X_train,y_train,X_test,y_test):
-        criterion = ['gini','entropy']
-        scores = []
-        
-        for c in criterion:
-            rf = RandomForestClassifier(criterion=c)
-            rf.fit(X_train, y_train)
-            score = rf.score(X_test,y_test)*100
-
-            scores.append(score)
-
-        criterion_data = pd.DataFrame({'Criterion':criterion,'Accuracy':scores})
-
-        criterion_plot = alt.Chart(
-                                    criterion_data,
-                                    title='Accuracy of RF with different criterion'
-                                ).mark_bar().encode(
-                                    x='Criterion',
-                                    y='Accuracy',
-                                    color=alt.Color('Criterion', scale=alt.Scale(scheme='category10'))
-                                )
-        criterion_annotations = alt.Chart(criterion_data).mark_text(
-                                                                        align='center',
-                                                                        baseline='top',
-                                                                        fontSize = 10,
-                                                                        dx = 0,
-                                                                        dy = 10
-                                                                    ).encode(
-                                                                        x='Criterion',
-                                                                        y='Accuracy',
-                                                                        text=alt.Text('Accuracy:Q', format=',.2f')
-                                                                    )
-        combine = (criterion_plot+criterion_annotations).properties(
-                                                                        width=450,
-                                                                        height=300
-                                                                    ).configure_axisX(
-                                                                        labelAngle=0
-                                                                    )
-        st.altair_chart(combine)
-
-        return criterion[np.argmax(scores)]
-
-    def rf_select_best_n(X_train,y_train,X_test,y_test):
-        scores,n_list = [],[]
-        max_score,counter = 0,0
-        n_counter = 50
-
-        while True:
-            rf = RandomForestClassifier(n_estimators=n_counter)
-            rf.fit(X_train, y_train)
-            score = rf.score(X_test,y_test)*100
-
-            n_list.append(n_counter)
-            scores.append(score)
-            
-            n_counter += 10
-            
-            if score > max_score+0.02:
-                max_score = score
-                counter = 0
-            elif counter < 10:
-                counter += 1
-            else:
-                break
-        
-        n_data = pd.DataFrame({'n_estimators':n_list,'Accuracy':scores})
-        best_n_data = pd.DataFrame({'n_estimators':[n_list[np.argmax(scores)]],'Accuracy':[max(scores)]})
-
-        n_line = alt.Chart(n_data,title='Accuracy of RF with different n_estimators').mark_line().encode(x='n_estimators',y='Accuracy')
-        n_marks = alt.Chart(n_data).mark_circle(size=20).encode(
-                                                                    x='n_estimators',
-                                                                    y='Accuracy',
-                                                                    tooltip=['n_estimators','Accuracy']
-                                                                ).interactive()
-        best_n_marks = alt.Chart(best_n_data).mark_circle(size=50,color='red').encode(
-                                                                                        x='n_estimators',
-                                                                                        y='Accuracy'
-                                                                                    )
-        best_n_annotations = alt.Chart(best_n_data).mark_text(
-                                                                align='center',
-                                                                baseline='top',
-                                                                fontSize = 10,
-                                                                dx = 0,
-                                                                dy = 10
-                                                            ).encode(
-                                                                x='n_estimators',
-                                                                y='Accuracy',
-                                                                text='n_estimators'
-                                                            )
-        st.altair_chart(n_line+n_marks+best_n_marks+best_n_annotations)
-        return n_list[np.argmax(scores)]
-
-    rf_depth, rf_criterion, rf_n = 0,0,0
     col1, col2, col3 = st.columns(3)
     with col1:
-        rf_depth = rf_select_best_depth(X_train,y_train,X_test,y_test)
+        image = Image.open('Q3/Classification/rf_depth.png')
+        st.image(image)
     with col2:
-        rf_criterion = rf_select_best_criterion(X_train,y_train,X_test,y_test)
+        image = Image.open('Q3/Classification/rf_criterion.png')
+        st.image(image)
     with col3:
-        rf_n = rf_select_best_n(X_train,y_train,X_test,y_test)
+        image = Image.open('Q3/Classification/rf_n.png')
+        st.image(image)
 
     st.write('---')
 
     # ---------------------------------------------------------------------------------------------------------------------
     st.subheader('Support vector classifier')
     
-    def svc_select_best_kernel(X_train,y_train,X_test,y_test):
-    
-        kernel = ['linear', 'poly', 'rbf', 'sigmoid']
-        scores = []
-        
-        for k in kernel:
-            svc = SVC(probability=True,kernel=k)
-            svc.fit(X_train, y_train)
-            score = svc.score(X_test,y_test)*100
-            scores.append(score)
-
-        kernel_data = pd.DataFrame({'Kernel':kernel,'Accuracy':scores})
-
-        kernel_plot = alt.Chart(
-                                    kernel_data,
-                                    title='Accuracy of SVC with different kernel'
-                                ).mark_bar().encode(
-                                    x='Kernel',
-                                    y='Accuracy',
-                                    color=alt.Color('Kernel', scale=alt.Scale(scheme='paired'))
-                                )
-        kernel_annotations = alt.Chart(kernel_data).mark_text(
-                                                                align='center',
-                                                                baseline='top',
-                                                                fontSize = 10,
-                                                                dx = 0,
-                                                                dy = 10
-                                                            ).encode(
-                                                                x='Kernel',
-                                                                y='Accuracy',
-                                                                text=alt.Text('Accuracy:Q', format=',.2f')
-                                                            )
-        combine = (kernel_plot+kernel_annotations).properties(
-                                                                width=450,
-                                                                height=300
-                                                            ).configure_axisX(
-                                                                labelAngle=0
-                                                            )
-        st.altair_chart(combine)
-
-        return kernel[np.argmax(scores)]
-
-    def svc_select_best_gamma(X_train,y_train,X_test,y_test):
-        gamma = ['scale', 'auto']
-        scores = []
-        
-        for g in gamma:
-            svc = SVC(probability=True,gamma=g)
-            svc.fit(X_train, y_train)
-            score = svc.score(X_test,y_test)*100
-            scores.append(score)
-
-        gamma_data = pd.DataFrame({'Gamma':gamma,'Accuracy':scores})
-
-        gamma_plot = alt.Chart(
-                                    gamma_data,
-                                    title='Accuracy of SVC with different gamma'
-                                ).mark_bar().encode(
-                                    x='Gamma',
-                                    y='Accuracy',
-                                    color=alt.Color('Gamma', scale=alt.Scale(scheme='category10'))
-                                )
-        gamma_annotations = alt.Chart(gamma_data).mark_text(
-                                                                align='center',
-                                                                baseline='top',
-                                                                fontSize = 10,
-                                                                dx = 0,
-                                                                dy = 10
-                                                            ).encode(
-                                                                x='Gamma',
-                                                                y='Accuracy',
-                                                                text=alt.Text('Accuracy:Q', format=',.2f')
-                                                            )
-        combine = (gamma_plot+gamma_annotations).properties(
-                                                                width=450,
-                                                                height=300
-                                                            ).configure_axisX(
-                                                                labelAngle=0
-                                                            )
-        st.altair_chart(combine)
-
-        return gamma[np.argmax(scores)]
-
-    def svc_select_best_degree(X_train,y_train,X_test,y_test):
-        scores,degree_list = [],[]
-        degree_counter = 3
-
-        while True:
-            svc = SVC(kernel='poly',degree=degree_counter)
-            svc.fit(X_train, y_train)
-            score = svc.score(X_test,y_test)*100
-
-            degree_list.append(degree_counter)
-            scores.append(score)
-
-            degree_counter += 1
-
-            if degree_counter > 20:
-                break
-
-        degree_data = pd.DataFrame({'Degree':degree_list,'Accuracy':scores})
-        best_degree_data = pd.DataFrame({'Degree':[degree_list[np.argmax(scores)]],'Accuracy':[max(scores)]})
-
-        degree_line = alt.Chart(degree_data,title='Accuracy of SVC with different degree').mark_line().encode(x='Degree',y='Accuracy')
-        degree_marks = alt.Chart(degree_data).mark_circle(size=20).encode(
-                                                                            x='Degree',
-                                                                            y='Accuracy',
-                                                                            tooltip=['Degree','Accuracy']
-                                                                        ).interactive()
-        best_degree_marks = alt.Chart(best_degree_data).mark_circle(size=50,color='red').encode(x='Degree',y='Accuracy')
-        best_degree_annotations = alt.Chart(best_degree_data).mark_text(
-                                                                align='center',
-                                                                baseline='top',
-                                                                fontSize = 10,
-                                                                dx = 0,
-                                                                dy = 10
-                                                            ).encode(
-                                                                x='Degree',
-                                                                y='Accuracy',
-                                                                text='Degree'
-                                                            )
-        st.altair_chart(degree_line+degree_marks+best_degree_marks+best_degree_annotations)
-        return degree_list[np.argmax(scores)]
-
-    svc_kernel, svc_gamma, svc_degree = 0,0,3
     col1, col2, col3 = st.columns(3)
     with col1:
-        svc_kernel = svc_select_best_kernel(X_train,y_train,X_test,y_test)
+        image = Image.open('Q3/Classification/svm_kernel.png')
+        st.image(image)
     with col2:
-        svc_gamma = svc_select_best_gamma(X_train,y_train,X_test,y_test)
-    if svc_kernel == 'poly':
-        with col3:
-            svc_degree = svc_select_best_degree(X_train,y_train,X_test,y_test)
+        image = Image.open('Q3/Classification/svm_gamma.png')
+        st.image(image)
+    with col3:
+        image = Image.open('Q3/Classification/svm_degree.png')
+        st.image(image)
 
     st.write('---')
     # ---------------------------------------------------------------------------------------------------------------------
     st.subheader('Comparison')
 
-    def evaluate_plot(model_list):
-        col1, col2 = st.columns(2)
-
-        model_type = []
-        value = []
-        aspect = []
-        prob_list = []
-        model_name = ['SVC','RF']
-            
-        for i,model in enumerate(model_list):
-            model_type.append(model_name[i])
-            value.append(model.score(X_test, y_test))
-            aspect.append('Accuracy')
-            
-            model_type.append(model_name[i])
-            prob = model.predict_proba(X_test)[:,1]
-            value.append(roc_auc_score(y_test, prob))
-            prob_list.append(prob)
-            aspect.append('AUC')
-            
-            y_pred = model.predict(X_test)
-            
-            model_type.append(model_name[i])
-            value.append(precision_score(y_test, y_pred))
-            aspect.append('Precision')
-            
-            model_type.append(model_name[i])
-            value.append(recall_score(y_test, y_pred))
-            aspect.append('Recall')
-            
-            model_type.append(model_name[i])
-            value.append(f1_score(y_test, y_pred))
-            aspect.append('F1')
-            
-        data = {"Model_type": model_type,
-                "Value": [val * 100 for val in value],
-                "Aspect": aspect}
-        df = pd.DataFrame(data)
-        
-        with col1:
-            gp_chart = alt.Chart(df).mark_bar().encode(
-                                                            alt.Column('Aspect',title="Statistics of Different Models"),
-                                                            alt.X('Model_type',title=""),
-                                                            alt.Y('Value', axis=alt.Axis(grid=False)), 
-                                                            alt.Color('Model_type'),
-                                                            tooltip=['Value']
-                                                        ).properties(
-                                                            height=395,
-                                                            width=70
-                                                        ).interactive()
-
-            st.altair_chart(gp_chart)
-        
-        # ROC graph
-        fpr_svc, tpr_svc, thresholds_svc = roc_curve(y_test, prob_list[0])
-        fpr_rf, tpr_rf, thresholds_rf = roc_curve(y_test, prob_list[1])
-        
-        svc_data = pd.DataFrame({'FPR':fpr_svc,'TPR':tpr_svc,'Model_type':'SVC'})
-        rf_data = pd.DataFrame({'FPR':fpr_rf,'TPR':tpr_rf,'Model_type':'RF'})
-        straight_data = pd.DataFrame({'FPR':[0, 1],'TPR':[0, 1]})
-
-        combine = [svc_data, rf_data]
-        df_combine = pd.concat(combine)
-
-        with col2:
-            line_plot = alt.Chart(df_combine,title='Receiver Operating Characteristic (ROC) Curve').mark_line().encode(
-                                                                                                                        x=alt.X('FPR',title='False Positive Rate'),
-                                                                                                                        y=alt.Y('TPR',title='True Positive Rate'),
-                                                                                                                        color=alt.Color('Model_type', scale=alt.Scale(scheme='category10'))
-                                                                                                                    ).properties(
-                                                                                                                        height=500
-                                                                                                                    )
-            straight_line_plot = alt.Chart(straight_data).mark_line(color='green').encode(
-                                                                                            x=alt.X('FPR'),
-                                                                                            y=alt.Y('TPR'),
-                                                                                        ).properties(
-                                                                                            height=500
-                                                                                        )    
-            st.altair_chart(line_plot+straight_line_plot, use_container_width=True)
-        
-    def confusion_matrix_graph(model_list):
-        col = st.columns(2)
-        model_type = ['SVC','RF']
-
-        for i,model in enumerate(model_list):
-            with col[i]:
-                cm = confusion_matrix(y_test, model.predict(X_test))
-                temp = cm[0][1]
-                cm[0][1] = cm[1][0]
-                cm[1][0] = temp
-                cm_df = pd.DataFrame(cm).reset_index().melt('index')
-                cm_df.columns = ['var1', 'var2', 'confusion_matrix']
-
-                base = alt.Chart(cm_df,title="Confusion matrix of "+model_type[i]).encode(
-                                                                            x=alt.X("var1", type="nominal", title="Predicted Label"),
-                                                                            y=alt.X("var2", type="nominal", title="True Label")
-                                                                        )
-                rects = base.mark_rect().encode(color=alt.Color('confusion_matrix', scale=alt.Scale(scheme='lightgreyteal')))#lightgreyteal
-                text = base.mark_text(size=10).encode(text='confusion_matrix')
-                combine = (rects + text).configure_axisX(labelAngle=0).properties(height=500)
-                st.altair_chart(combine, use_container_width=True)
-
-    svc = SVC(probability=True,kernel=svc_kernel,gamma=svc_gamma,degree=svc_degree)
-    svc.fit(X_train, y_train)
-
-    rf = RandomForestClassifier(max_depth=rf_depth,criterion=rf_criterion,n_estimators=rf_n)
-    rf.fit(X_train, y_train)
-
-    evaluate_plot([svc,rf])
+    image = Image.open('Q3/Classification/classification_evaluation.png')
+    st.image(image)
     st.write('---')
 
-    confusion_matrix_graph([svc,rf])
+    image = Image.open('Q3/Classification/classification_cm.png')
+    st.image(image)
     st.write('---')
 
     # ---------------------------------------------------------------------------------------------------------------------

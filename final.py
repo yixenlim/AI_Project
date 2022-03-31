@@ -11,13 +11,13 @@ import time,random
 import constraint,math
 
 # q3
-from sklearn.cluster import KMeans
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from imblearn.over_sampling import RandomOverSampler
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split 
-from sklearn.metrics import silhouette_score, roc_auc_score, roc_curve,confusion_matrix,precision_score, recall_score, f1_score
+# from sklearn.cluster import KMeans
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.svm import SVC
+# from imblearn.over_sampling import RandomOverSampler
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.model_selection import train_test_split 
+# from sklearn.metrics import silhouette_score, roc_auc_score, roc_curve,confusion_matrix,precision_score, recall_score, f1_score
 
 st.sidebar.header('TIC3151 - ARTIFICIAL INTELLIGENCE PROJECT')
 
@@ -352,8 +352,9 @@ elif question == 'Q2':
     st.write('Vac_B last day:',vac_B)
     st.write('Vac_C last day:',vac_C)
     st.write('Last day vaccination coverage:',solution_found_last['CR-1']*200 + solution_found_last['CR-2']*500 + solution_found_last['CR-3']*1000 + solution_found_last['CR-4']*2500 + solution_found_last['CR-5']*4000)
-else:
-    st.title('A3 - Loan Application Modeling')
+
+elif question == 'Q3':
+    st.title('Q3 - Loan Application Modeling')
     st.write('---')
     
     st.header('Description of the dataset')

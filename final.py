@@ -10,15 +10,6 @@ import time,random
 # q2
 import constraint,math
 
-# q3
-# from sklearn.cluster import KMeans
-# from sklearn.ensemble import RandomForestClassifier
-# from sklearn.svm import SVC
-# from imblearn.over_sampling import RandomOverSampler
-# from sklearn.preprocessing import StandardScaler
-# from sklearn.model_selection import train_test_split 
-# from sklearn.metrics import silhouette_score, roc_auc_score, roc_curve,confusion_matrix,precision_score, recall_score, f1_score
-
 st.sidebar.header('TIC3151 - ARTIFICIAL INTELLIGENCE PROJECT')
 
 question = st.sidebar.radio('Please choose a question',['Q1','Q2','Q3'])
@@ -521,7 +512,7 @@ elif question == 'Q3':
     with col2: # silhouette: choose highest
         image = Image.open('Q3/Clustering/km_silhouette.png')
         st.image(image)#km_silhouette_visualizer
-    with col3: # silhouette: choose highest
+    with col3:
         image = Image.open('Q3/Clustering/km_silhouette_visualizer.png')
         st.image(image)
     st.write('---')

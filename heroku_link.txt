@@ -1,1 +1,1 @@
-https://ai-project-tic3151.herokuapp.com/
+https://aiproject-tic3151.herokuapp.com/
